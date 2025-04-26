@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple EA</title>
+    <script>
+        function generateXML() {
+            // Create XML document
+            const xmlDoc = document.implementation.createDocument(null, "formData");
+            const root = xmlDoc.documentElement;
+
+            // Get form elements
+            const form = document.getElementById("dataForm");
+            
+            Array.from(form.elements).forEach(element => {
+                if (element.value.trim() !== "") {
+                    const field = xmlDoc.createElement(element.className);
+                    field.textContent = element.value;
+                    root.appendChild(field);
+                }
+            });
+
+            // Format and display XML
+            const serializer = new XMLSerializer();
+            const xmlString = serializer.serializeToString(xmlDoc);
+            document.getElementById("xmlOutput").textContent = formatXML(xmlString);
+        }
+
+        function formatXML(xml) {
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(xml, "text/xml");
+            const serializer = new XMLSerializer();
+
+            // Parse the XML and XSLT into DOM objects
+            const xslDoc = parser.parseFromString(getXSLT(), "application/xml");
+
+            // Set up the XSLT processor
+            const xsltProcessor = new XSLTProcessor();
+            xsltProcessor.importStylesheet(xslDoc);
+
+            // Transform XML with XSLT
+            const resultFragment = xsltProcessor.transformToFragment(xmlDoc, document);
+            return serializer.serializeToString(resultFragment).replace(/></g, ">\n<");
+        }
+
+        function getXSLT() {
+/*
+<?xml version="1.0" encoding="UTF-8"?>
+<model xmlns="http://www.opengroup.org/xsd/archimate/3.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengroup.org/xsd/archimate/3.0/ http://www.opengroup.org/xsd/archimate/3.1/archimate3_Diagram.xsd" identifier="id-dabea4ca0a3847379272d0e2158845be">
+  <name xml:lang="nl">(new model)</name>
+  <organizations>
+    <item>
+      <label xml:lang="nl">Views</label>
+      <item identifierRef="id-02027f07b3c248fbb9b841b558559b24" />
+    </item>
+  </organizations>
+  <views>
+    <diagrams>
+      <view identifier="id-02027f07b3c248fbb9b841b558559b24" xsi:type="Diagram">
+        <name xml:lang="nl">Default View</name>
+      </view>
+    </diagrams>
+  </views>
+</model>
+<?xml version="1.0" encoding="UTF-8"?>
+<model xmlns="http://www.opengroup.org/xsd/archimate/3.1/">
+  <elements>
+    <element identifier="id-1" xsi:type="BusinessActor">
+      <name>Customer</name>
+    </element>
+    <element identifier="id-2" xsi:type="ApplicationComponent">
+      <name>CRM System</name>
+    </element>
+  </elements>
+  <relationships>
+    <relationship identifier="rel-1" xsi:type="ServingRelationship">
+      <source>id-1</source>
+      <target>id-2</target>
+    </relationship>
+  </relationships>
+</model>
+*/
+
+            const xslt =`<?xml version="1.0"?>
+                <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
+                    <xsl:template match="*">
+                    test: <xsl:value-of select="bc"/>
+                    </xsl:template>
+                </xsl:stylesheet>`;
+            console.log(xslt)
+            return xslt
+
+        }
+
+    </script>
+    <style>
+        #xmlOutput {
+            white-space: pre;
+            font-family: monospace;
+            background: #f4f4f4;
+            padding: 10px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide">
+    <h1>ADM fase A en B</h1>
+    <form id="dataForm">
+            <h2>Dit doen we omdat:</h2>
+            <p>Wat is de rede dat we dit doen.</p>
+            <input type="text" class="driver" />
+            <input type="text" class="driver" />
+            <input type="text" class="driver" />
+            <h2>Dit doen we door:</h2>
+            <p>Hoe geven we hier invulling aan.</p>
+            <input type="text" class="bf" />
+            <input type="text" class="bf" />
+            <input type="text" class="bf" />
+            <h2>Dit gaan we verbeteren:</h2>
+            <p>Welke verandering zien we op ons afkomen.</p>
+            <input type="text" class="goal" />
+            <input type="text" class="goal" />
+            <input type="text" class="goal" />
+            <h2>Dit heeft impact op:</h2>
+            <p>Gebruik de vermogenskaart als referentie.</p>
+            <input type="text" class="bc" />
+            <input type="text" class="bc" />
+            <input type="text" class="bc" />
+        <button type="button" onclick="generateXML()">versturen</button>
+    </form>
+    <div class="slide">
+
+    <h2>XML Output:</h2>
+    <pre id="xmlOutput"></pre>
+</body>
+</html>
