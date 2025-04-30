@@ -28,12 +28,14 @@
         function formatXML(xml) {
             const parser = new DOMParser();
             const xmlDoc = parser.parseFromString(xml, "text/xml");
+            console.log(xml);
             const serializer = new XMLSerializer();
 
             // Parse the XML and XSLT into DOM objects
             const xslDoc = parser.parseFromString(getXSLT(), "application/xml");
 
             // Set up the XSLT processor
+            console.log(xslDoc)
             const xsltProcessor = new XSLTProcessor();
             xsltProcessor.importStylesheet(xslDoc);
 
@@ -43,52 +45,39 @@
         }
 
         function getXSLT() {
-/*
-<?xml version="1.0" encoding="UTF-8"?>
-<model xmlns="http://www.opengroup.org/xsd/archimate/3.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengroup.org/xsd/archimate/3.0/ http://www.opengroup.org/xsd/archimate/3.1/archimate3_Diagram.xsd" identifier="id-dabea4ca0a3847379272d0e2158845be">
-  <name xml:lang="nl">(new model)</name>
-  <organizations>
-    <item>
-      <label xml:lang="nl">Views</label>
-      <item identifierRef="id-02027f07b3c248fbb9b841b558559b24" />
-    </item>
-  </organizations>
-  <views>
-    <diagrams>
-      <view identifier="id-02027f07b3c248fbb9b841b558559b24" xsi:type="Diagram">
-        <name xml:lang="nl">Default View</name>
-      </view>
-    </diagrams>
-  </views>
-</model>
-<?xml version="1.0" encoding="UTF-8"?>
-<model xmlns="http://www.opengroup.org/xsd/archimate/3.1/">
-  <elements>
-    <element identifier="id-1" xsi:type="BusinessActor">
-      <name>Customer</name>
-    </element>
-    <element identifier="id-2" xsi:type="ApplicationComponent">
-      <name>CRM System</name>
-    </element>
-  </elements>
-  <relationships>
-    <relationship identifier="rel-1" xsi:type="ServingRelationship">
-      <source>id-1</source>
-      <target>id-2</target>
-    </relationship>
-  </relationships>
-</model>
-*/
-
-            const xslt =`<?xml version="1.0"?>
-                <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
-                    <xsl:template match="*">
-                    test: <xsl:value-of select="bc"/>
-                    </xsl:template>
+          const xslt =`<xsl:stylesheet version="1.0"
+                    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                    xmlns="http://www.opengroup.org/xsd/archimate/3.0/"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                        <xsl:output method="xml" indent="yes" />
+                        <!--xsl:strip-space elements="*"/-->
+                        <xsl:template match="formData">
+                            <model xmlns="http://www.opengroup.org/xsd/archimate/3.0/"
+                                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                identifier="id-c7e68948bd76413c9085d574b145eb21">
+                                <name xml:lang="en">todo<xsl:value-of select="todo"/></name>
+                                <elements>
+                                    <xsl:for-each select="*">
+                                        <xsl:call-template name="element"/>
+                                    </xsl:for-each>
+                                </elements>
+                            </model>
+                        </xsl:template>
+                        <xsl:template name="element">
+                                <element>
+                                    <xsl:attribute name="identifier">
+                                        <xsl:value-of select="./text()"/>
+                                    </xsl:attribute>
+                                    <xsl:attribute name="xsi:type">
+                                        <xsl:value-of select="local-name()"/>
+                                    </xsl:attribute>
+                                    <name><xsl:value-of select="./text()"/></name>
+                                </element>
+                        </xsl:template>
                 </xsl:stylesheet>`;
+
             console.log(xslt)
             return xslt
-
         }
 
     </script>
@@ -108,24 +97,24 @@
     <form id="dataForm">
             <h2>Dit doen we omdat:</h2>
             <p>Wat is de rede dat we dit doen.</p>
-            <input type="text" class="driver" />
-            <input type="text" class="driver" />
-            <input type="text" class="driver" />
+            <input type="text" class="Driver" />
+            <input type="text" class="Driver" />
+            <input type="text" class="Driver" />
             <h2>Dit doen we door:</h2>
             <p>Hoe geven we hier invulling aan.</p>
-            <input type="text" class="bf" />
-            <input type="text" class="bf" />
-            <input type="text" class="bf" />
+            <input type="text" class="BusinessFunction" />
+            <input type="text" class="BusinessFunction" />
+            <input type="text" class="BusinessFunction" />
             <h2>Dit gaan we verbeteren:</h2>
             <p>Welke verandering zien we op ons afkomen.</p>
-            <input type="text" class="goal" />
-            <input type="text" class="goal" />
-            <input type="text" class="goal" />
+            <input type="text" class="Goal" />
+            <input type="text" class="Goal" />
+            <input type="text" class="Goal" />
             <h2>Dit heeft impact op:</h2>
             <p>Gebruik de vermogenskaart als referentie.</p>
-            <input type="text" class="bc" />
-            <input type="text" class="bc" />
-            <input type="text" class="bc" />
+            <input type="text" class="Capability" />
+            <input type="text" class="Capability" />
+            <input type="text" class="Capability" />
         <button type="button" onclick="generateXML()">versturen</button>
     </form>
     <div class="slide">
